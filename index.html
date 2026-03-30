@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency Ward Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">EW</div>
+        <div>
+          <h2>Emergency Ward</h2>
+          <p>Operational dashboard demo</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="overview">Overview</button>
+        <button class="nav-btn" data-tab="patientFlow">Patient Flow</button>
+        <button class="nav-btn" data-tab="staffing">Staffing and Beds</button>
+        <button class="nav-btn" data-tab="incidents">Incident Command</button>
+      </nav>
+
+      <div class="sidebar-note">
+        <h4>About this demo</h4>
+        <p>This standalone dashboard is based on the 4 wireframe screens and uses realistic sample data so it is presentable in screenshots and demos.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar card">
+        <div>
+          <h1>Emergency Ward Command Dashboard</h1>
+          <p>Real time emergency department style prototype with detailed screens, filters, charts, and demo data</p>
+        </div>
+        <div class="topbar-meta">
+          <span class="pill" id="lastUpdated">Last updated 09:20</span>
+          <span class="pill">Day Shift</span>
+          <span class="pill">Demo Mode</span>
+        </div>
+      </header>
+
+      <section class="filters card">
+        <div class="filters-left">
+          <div class="control">
+            <label>Date</label>
+            <input type="date" id="dateFilter" value="2026-03-18" />
+          </div>
+          <div class="control">
+            <label>Shift</label>
+            <select id="shiftFilter">
+              <option>Day</option>
+              <option>Night</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>Zone</label>
+            <select id="zoneFilter">
+              <option>All</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>Acuity</label>
+            <select id="acuityFilter">
+              <option>All</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>Arrival mode</label>
+            <select id="arrivalFilter">
+              <option>All</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters-right">
+          <div class="control search-control">
+            <label>Search</label>
+            <input type="text" id="searchFilter" placeholder="Search patient ID or clinician" />
+          </div>
+          <button class="primary-btn" id="resetBtn">Reset</button>
+          <button class="secondary-btn" id="exportBtn">Export CSV</button>
+        </div>
+      </section>
+
+      <section class="kpi-grid" id="kpiGrid"></section>
+
+      <section id="tab-overview" class="tab-panel active">
+        <div class="layout-grid overview-grid">
+          <div class="card chart-card span-8">
+            <div class="card-head">
+              <h3>Patient flow by stage</h3>
+              <p>Main operational view of how the current patient load is distributed across the department</p>
+            </div>
+            <canvas id="stageChart" height="140"></canvas>
+          </div>
+
+          <div class="card chart-card span-4">
+            <div class="card-head">
+              <h3>Hourly arrivals vs discharges</h3>
+              <p>Recent trend showing flow pressure and output</p>
+            </div>
+            <canvas id="arrivalChart" height="140"></canvas>
+          </div>
+
+          <div class="card chart-card span-4">
+            <div class="card-head">
+              <h3>Acuity mix</h3>
+              <p>Live composition of patients by triage level</p>
+            </div>
+            <canvas id="acuityChart" height="180"></canvas>
+          </div>
+
+          <div class="card span-4">
+            <div class="card-head">
+              <h3>Operational alerts</h3>
+              <p>Small alert queue for immediate attention</p>
+            </div>
+            <div id="alertList" class="stack-list"></div>
+          </div>
+
+          <div class="card span-4">
+            <div class="card-head">
+              <h3>Quick actions</h3>
+              <p>Demo action set for the shift lead</p>
+            </div>
+            <div class="button-stack">
+              <button class="action-btn">Open patient tracker</button>
+              <button class="action-btn">View ambulance queue</button>
+              <button class="action-btn">Escalate staffing gap</button>
+              <button class="action-btn">Export shift snapshot</button>
+              <button class="action-btn">Start bed huddle</button>
+            </div>
+          </div>
+
+          <div class="card span-12">
+            <div class="card-head">
+              <h3>Interaction notes</h3>
+              <p>This overview is intended for at a glance situational awareness rather than patient level clinical decision making.</p>
+            </div>
+            <ul class="notes-list">
+              <li>The dashboard uses calculated turnaround times, stage load, staffing gaps, and incident indicators.</li>
+              <li>Large charts are used intentionally so the screen looks presentable in screenshots and portfolio evidence.</li>
+              <li>All data in this version is demo data and can be replaced later with live API or spreadsheet data.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-patientFlow" class="tab-panel">
+        <div class="layout-grid">
+          <div class="card span-6">
+            <div class="card-head">
+              <h3>Queue map by stage</h3>
+              <p>Swimlane style visual showing where patients are currently located in the journey</p>
+            </div>
+            <div id="queueMap" class="queue-map"></div>
+          </div>
+
+          <div class="card span-6">
+            <div class="card-head">
+              <h3>Selected patient panel</h3>
+              <p>Click a patient row below to see a detailed summary panel</p>
+            </div>
+            <div id="selectedPatient" class="selected-panel"></div>
+          </div>
+
+          <div class="card span-8">
+            <div class="card-head">
+              <h3>Patient list table</h3>
+              <p>Sortable working table for the flow coordinator</p>
+            </div>
+            <div class="table-wrap">
+              <table id="patientTable">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Acuity</th>
+                    <th>Zone</th>
+                    <th>Arrival mode</th>
+                    <th>Stage</th>
+                    <th>Time in dept</th>
+                    <th>Door to triage</th>
+                    <th>Door to clinician</th>
+                    <th>Turnaround</th>
+                    <th>Clinician</th>
+                    <th>Alerts</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card span-4">
+            <div class="card-head">
+              <h3>Escalation rules</h3>
+              <p>Rules to identify unsafe waits or bottlenecks</p>
+            </div>
+            <div id="ruleList" class="button-stack"></div>
+          </div>
+
+          <div class="card span-12">
+            <div class="card-head">
+              <h3>Patient flow notes</h3>
+              <p>This page is more operational and should be used by the flow coordinator or nurse in charge.</p>
+            </div>
+            <ul class="notes-list">
+              <li>The swimlane view exposes pile ups visually, while the table supports direct action and queue clearing.</li>
+              <li>The selected patient panel is useful during demonstrations because it shows the wireframe logic in a cleaner applied form.</li>
+              <li>All waiting times and turnaround values are calculated automatically from the timestamp fields in the demo dataset.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-staffing" class="tab-panel">
+        <div class="layout-grid">
+          <div class="card span-5">
+            <div class="card-head">
+              <h3>Roster vs actual staffing</h3>
+              <p>Coverage by role with visible gaps and agency support</p>
+            </div>
+            <div id="staffingCards" class="stack-list"></div>
+          </div>
+
+          <div class="card span-3">
+            <div class="card-head">
+              <h3>Skill mix and coverage trend</h3>
+              <p>Required staffing vs present staffing</p>
+            </div>
+            <canvas id="staffingChart" height="200"></canvas>
+          </div>
+
+          <div class="card span-4">
+            <div class="card-head">
+              <h3>Break coverage planner</h3>
+              <p>Mini planner showing break windows and local coverage risk</p>
+            </div>
+            <div class="table-wrap small-table">
+              <table id="breakTable">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Role</th>
+                    <th>Zone</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card span-5">
+            <div class="card-head">
+              <h3>Bed and cubicle state</h3>
+              <p>Real time style occupancy board for treatment spaces</p>
+            </div>
+            <div class="table-wrap">
+              <table id="bedStateTable">
+                <thead>
+                  <tr>
+                    <th>Area</th>
+                    <th>Open</th>
+                    <th>Occupied</th>
+                    <th>Cleaning</th>
+                    <th>Blocked</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card span-3">
+            <div class="card-head">
+              <h3>Turnaround times</h3>
+              <p>Bed ready time minus bed vacated time</p>
+            </div>
+            <canvas id="turnaroundChart" height="220"></canvas>
+          </div>
+
+          <div class="card span-4">
+            <div class="card-head">
+              <h3>Operational risk register</h3>
+              <p>Compact issue register for the current shift</p>
+            </div>
+            <div id="riskRegister" class="stack-list"></div>
+          </div>
+
+          <div class="card span-12">
+            <div class="card-head">
+              <h3>Staffing and beds notes</h3>
+              <p>This page helps the team distinguish between flow pressure, staffing shortages, and bed capacity constraints.</p>
+            </div>
+            <ul class="notes-list">
+              <li>Tables are intentionally concrete because they are trusted quickly in academic demonstration settings.</li>
+              <li>Average bed turnaround time is calculated as Σ bed turnaround times ÷ number of completed bed turnaround events.</li>
+              <li>The visual balance mirrors the staffing and beds wireframe but is upgraded into a cleaner presentable prototype.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-incidents" class="tab-panel">
+        <div class="layout-grid">
+          <div class="card span-4">
+            <div class="card-head">
+              <h3>Current incident summary</h3>
+              <p>Used during surge, ambulance stacking, or major internal delay situations</p>
+            </div>
+            <div id="incidentSummary" class="summary-grid"></div>
+          </div>
+
+          <div class="card span-3">
+            <div class="card-head">
+              <h3>Action tracker</h3>
+              <p>Short task board for command decisions</p>
+            </div>
+            <div class="table-wrap small-table">
+              <table id="actionTable">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Owner</th>
+                    <th>Due</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card span-5">
+            <div class="card-head">
+              <h3>Pressure monitor</h3>
+              <p>Trend of arrivals, breaches, handover delays, and occupancy in the last 6 hours</p>
+            </div>
+            <canvas id="pressureChart" height="220"></canvas>
+          </div>
+
+          <div class="card span-7">
+            <div class="card-head">
+              <h3>Escalation checklist</h3>
+              <p>Structured guide to reduce chaos when the department is under stress</p>
+            </div>
+            <div id="checklist" class="check-list"></div>
+          </div>
+
+          <div class="card span-5">
+            <div class="card-head">
+              <h3>Communications panel</h3>
+              <p>Draft structure for internal updates and handover notes</p>
+            </div>
+            <div class="table-wrap small-table">
+              <table id="commTable">
+                <thead>
+                  <tr>
+                    <th>Audience</th>
+                    <th>Message summary</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card span-12">
+            <div class="card-head">
+              <h3>Incident command notes</h3>
+              <p>This screen is for stressed periods where the department needs one place to hold facts, actions, owners, and communications.</p>
+            </div>
+            <ul class="notes-list">
+              <li>The page is intentionally high contrast and clean so it still looks readable in screenshots and presentation settings.</li>
+              <li>It reflects the structure of the incident wireframe but with working tables and a live style pressure chart.</li>
+              <li>The checklist, action tracker, and communications panel together make the dashboard look substantially more complete.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
