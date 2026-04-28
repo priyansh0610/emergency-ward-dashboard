@@ -3,188 +3,201 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emergency Ward Dashboard</title>
+  <title>Emergency Ward Dashboard - Feedback Revised Version</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">EW</div>
-        <div>
-          <h2>Emergency Ward</h2>
-          <p>Operational dashboard demo</p>
-        </div>
+  <div class="app">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Feedback Applied Revision</div>
+        <h1>Emergency Ward Command Dashboard</h1>
+        <p>Improved prototype based on Cycle 2 tester feedback, with stronger patient list sorting, richer chart analysis, clearer priority indicators, and more interactive filters.</p>
       </div>
-
-      <nav class="nav">
-        <button class="nav-btn active" data-tab="overview">Overview</button>
-        <button class="nav-btn" data-tab="patientFlow">Patient Flow</button>
-        <button class="nav-btn" data-tab="staffing">Staffing and Beds</button>
-        <button class="nav-btn" data-tab="incidents">Incident Command</button>
-      </nav>
-
-      <div class="sidebar-note">
-        <h4>About this demo</h4>
-        <p>This standalone dashboard is based on the 4 wireframe screens and uses realistic sample data so it is presentable in screenshots and demos.</p>
+      <div class="hero-panel">
+        <div class="hero-number" id="livePatients">0</div>
+        <div class="hero-label">active patients</div>
+        <div class="hero-mini" id="heroPressure">Operational pressure loading</div>
       </div>
-    </aside>
+    </header>
 
-    <main class="main">
-      <header class="topbar card">
-        <div>
-          <h1>Emergency Ward Command Dashboard</h1>
-          <p>Real time emergency department style prototype with detailed screens, filters, charts, and demo data</p>
-        </div>
-        <div class="topbar-meta">
-          <span class="pill" id="lastUpdated">Last updated 09:20</span>
-          <span class="pill">Day Shift</span>
-          <span class="pill">Demo Mode</span>
-        </div>
-      </header>
+    <section class="revision-banner">
+      <div>
+        <h2>Key feedback themes addressed</h2>
+        <p>Testers found the revised design clearer, calmer, and easier to follow, but asked for more detailed chart analysis, more interactive filters, and a stronger patient list table. This version directly targets those points.</p>
+      </div>
+      <div class="revision-tags">
+        <span>sortable patient list</span>
+        <span>priority scoring</span>
+        <span>detailed chart insights</span>
+        <span>interactive filters</span>
+        <span>real checklist actions</span>
+      </div>
+    </section>
 
-      <section class="filters card">
-        <div class="filters-left">
-          <div class="control">
-            <label>Date</label>
-            <input type="date" id="dateFilter" value="2026-03-18" />
-          </div>
-          <div class="control">
-            <label>Shift</label>
-            <select id="shiftFilter">
-              <option>Day</option>
-              <option>Night</option>
-            </select>
-          </div>
-          <div class="control">
-            <label>Zone</label>
-            <select id="zoneFilter">
-              <option>All</option>
-            </select>
-          </div>
-          <div class="control">
-            <label>Acuity</label>
-            <select id="acuityFilter">
-              <option>All</option>
-            </select>
-          </div>
-          <div class="control">
-            <label>Arrival mode</label>
-            <select id="arrivalFilter">
-              <option>All</option>
-            </select>
-          </div>
-        </div>
-        <div class="filters-right">
-          <div class="control search-control">
-            <label>Search</label>
-            <input type="text" id="searchFilter" placeholder="Search patient ID or clinician" />
-          </div>
-          <button class="primary-btn" id="resetBtn">Reset</button>
-          <button class="secondary-btn" id="exportBtn">Export CSV</button>
+    <section class="toolbar card">
+      <div class="control">
+        <label>Date</label>
+        <select id="dateFilter"></select>
+      </div>
+      <div class="control">
+        <label>Shift</label>
+        <select id="shiftFilter">
+          <option value="All">All</option>
+          <option value="Day">Day</option>
+          <option value="Night">Night</option>
+        </select>
+      </div>
+      <div class="control">
+        <label>Zone</label>
+        <select id="zoneFilter"></select>
+      </div>
+      <div class="control">
+        <label>Acuity</label>
+        <select id="acuityFilter"></select>
+      </div>
+      <div class="control">
+        <label>Arrival mode</label>
+        <select id="arrivalFilter"></select>
+      </div>
+      <div class="control">
+        <label>Patient view</label>
+        <select id="viewFilter">
+          <option value="All">All patients</option>
+          <option value="HighPriority">High priority only</option>
+          <option value="ActiveOnly">Active patients only</option>
+          <option value="CompletedOnly">Completed journeys only</option>
+        </select>
+      </div>
+      <div class="control search-box">
+        <label>Search</label>
+        <input id="searchFilter" placeholder="Patient ID, clinician, alert, or stage" />
+      </div>
+      <button class="btn secondary" id="resetBtn">Reset</button>
+      <button class="btn primary" id="exportBtn">Export CSV</button>
+    </section>
+
+    <section class="active-filters card">
+      <strong>Active filters:</strong>
+      <span id="filterSummary">All visible records</span>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="flow">Patient Flow</button>
+      <button class="tab" data-tab="analysis">Chart Analysis</button>
+      <button class="tab" data-tab="staffing">Staffing and Beds</button>
+      <button class="tab" data-tab="incident">Incident Command</button>
+      <button class="tab" data-tab="feedback">Feedback Applied</button>
+    </nav>
+
+    <section class="kpi-grid" id="kpiGrid"></section>
+
+    <main>
+      <section id="panel-overview" class="panel active">
+        <div class="grid">
+          <article class="card span-8">
+            <div class="card-title">
+              <div>
+                <h3>Patient flow by stage</h3>
+                <p>Shows current pressure by pathway stage, now with target notes and clearer interpretation.</p>
+              </div>
+              <span class="small-pill">Live demo data</span>
+            </div>
+            <div id="stageBars" class="bar-list"></div>
+          </article>
+
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Immediate risk queue</h3>
+                <p>Patients ranked by calculated priority score.</p>
+              </div>
+            </div>
+            <div id="riskQueue" class="stack"></div>
+          </article>
+
+          <article class="card span-6">
+            <div class="card-title">
+              <div>
+                <h3>Arrivals, discharges and occupancy trend</h3>
+                <p>More detailed chart than Cycle 2, with multiple operational signals.</p>
+              </div>
+            </div>
+            <div id="overviewLineChart" class="svg-chart"></div>
+            <div id="overviewLegend" class="legend"></div>
+          </article>
+
+          <article class="card span-3">
+            <div class="card-title">
+              <div>
+                <h3>Acuity mix</h3>
+                <p>Numbers and percentages for easier reading.</p>
+              </div>
+            </div>
+            <div id="acuityBreakdown" class="bar-list compact"></div>
+          </article>
+
+          <article class="card span-3">
+            <div class="card-title">
+              <div>
+                <h3>Operational alerts</h3>
+                <p>Prioritised alert list for the shift lead.</p>
+              </div>
+            </div>
+            <div id="alerts" class="stack"></div>
+          </article>
+
+          <article class="card span-12">
+            <div class="card-title">
+              <div>
+                <h3>Dashboard interpretation</h3>
+                <p>Added because testers asked for more analysis rather than only basic charts.</p>
+              </div>
+            </div>
+            <div id="interpretation" class="insight-grid"></div>
+          </article>
         </div>
       </section>
 
-      <section class="kpi-grid" id="kpiGrid"></section>
-
-      <section id="tab-overview" class="tab-panel active">
-        <div class="layout-grid overview-grid">
-          <div class="card chart-card span-8">
-            <div class="card-head">
-              <h3>Patient flow by stage</h3>
-              <p>Main operational view of how the current patient load is distributed across the department</p>
-            </div>
-            <canvas id="stageChart" height="140"></canvas>
-          </div>
-
-          <div class="card chart-card span-4">
-            <div class="card-head">
-              <h3>Hourly arrivals vs discharges</h3>
-              <p>Recent trend showing flow pressure and output</p>
-            </div>
-            <canvas id="arrivalChart" height="140"></canvas>
-          </div>
-
-          <div class="card chart-card span-4">
-            <div class="card-head">
-              <h3>Acuity mix</h3>
-              <p>Live composition of patients by triage level</p>
-            </div>
-            <canvas id="acuityChart" height="180"></canvas>
-          </div>
-
-          <div class="card span-4">
-            <div class="card-head">
-              <h3>Operational alerts</h3>
-              <p>Small alert queue for immediate attention</p>
-            </div>
-            <div id="alertList" class="stack-list"></div>
-          </div>
-
-          <div class="card span-4">
-            <div class="card-head">
-              <h3>Quick actions</h3>
-              <p>Demo action set for the shift lead</p>
-            </div>
-            <div class="button-stack">
-              <button class="action-btn">Open patient tracker</button>
-              <button class="action-btn">View ambulance queue</button>
-              <button class="action-btn">Escalate staffing gap</button>
-              <button class="action-btn">Export shift snapshot</button>
-              <button class="action-btn">Start bed huddle</button>
-            </div>
-          </div>
-
-          <div class="card span-12">
-            <div class="card-head">
-              <h3>Interaction notes</h3>
-              <p>This overview is intended for at a glance situational awareness rather than patient level clinical decision making.</p>
-            </div>
-            <ul class="notes-list">
-              <li>The dashboard uses calculated turnaround times, stage load, staffing gaps, and incident indicators.</li>
-              <li>Large charts are used intentionally so the screen looks presentable in screenshots and portfolio evidence.</li>
-              <li>All data in this version is demo data and can be replaced later with live API or spreadsheet data.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="tab-patientFlow" class="tab-panel">
-        <div class="layout-grid">
-          <div class="card span-6">
-            <div class="card-head">
-              <h3>Queue map by stage</h3>
-              <p>Swimlane style visual showing where patients are currently located in the journey</p>
+      <section id="panel-flow" class="panel">
+        <div class="grid">
+          <article class="card span-3">
+            <div class="card-title">
+              <div>
+                <h3>Queue map by stage</h3>
+                <p>Colour indicates acuity. Card order follows priority.</p>
+              </div>
             </div>
             <div id="queueMap" class="queue-map"></div>
-          </div>
+          </article>
 
-          <div class="card span-6">
-            <div class="card-head">
-              <h3>Selected patient panel</h3>
-              <p>Click a patient row below to see a detailed summary panel</p>
-            </div>
-            <div id="selectedPatient" class="selected-panel"></div>
-          </div>
-
-          <div class="card span-8">
-            <div class="card-head">
-              <h3>Patient list table</h3>
-              <p>Sortable working table for the flow coordinator</p>
+          <article class="card span-6">
+            <div class="card-title">
+              <div>
+                <h3>Improved patient list table</h3>
+                <p>Sortable columns and priority score added because testers said the table needed more clarity.</p>
+              </div>
+              <select id="sortSelect" class="mini-select">
+                <option value="priorityDesc">Sort by priority</option>
+                <option value="waitDesc">Longest wait first</option>
+                <option value="acuity">Acuity level</option>
+                <option value="stage">Pathway stage</option>
+                <option value="id">Patient ID</option>
+              </select>
             </div>
             <div class="table-wrap">
               <table id="patientTable">
                 <thead>
                   <tr>
-                    <th>Patient ID</th>
+                    <th>Patient</th>
+                    <th>Priority</th>
                     <th>Acuity</th>
                     <th>Zone</th>
-                    <th>Arrival mode</th>
                     <th>Stage</th>
                     <th>Time in dept</th>
                     <th>Door to triage</th>
                     <th>Door to clinician</th>
-                    <th>Turnaround</th>
                     <th>Clinician</th>
                     <th>Alerts</th>
                   </tr>
@@ -192,74 +205,142 @@
                 <tbody></tbody>
               </table>
             </div>
-          </div>
+          </article>
 
-          <div class="card span-4">
-            <div class="card-head">
-              <h3>Escalation rules</h3>
-              <p>Rules to identify unsafe waits or bottlenecks</p>
+          <article class="card span-3">
+            <div class="card-title">
+              <div>
+                <h3>Selected patient panel</h3>
+                <p>Click a table row to update details.</p>
+              </div>
             </div>
-            <div id="ruleList" class="button-stack"></div>
-          </div>
+            <div id="selectedPatient" class="summary-grid single"></div>
+          </article>
 
-          <div class="card span-12">
-            <div class="card-head">
-              <h3>Patient flow notes</h3>
-              <p>This page is more operational and should be used by the flow coordinator or nurse in charge.</p>
+          <article class="card span-6">
+            <div class="card-title">
+              <div>
+                <h3>Escalation guidance</h3>
+                <p>Non misleading guidance statements retained from Cycle 2, now matched to the priority table.</p>
+              </div>
             </div>
-            <ul class="notes-list">
-              <li>The swimlane view exposes pile ups visually, while the table supports direct action and queue clearing.</li>
-              <li>The selected patient panel is useful during demonstrations because it shows the wireframe logic in a cleaner applied form.</li>
-              <li>All waiting times and turnaround values are calculated automatically from the timestamp fields in the demo dataset.</li>
+            <ul id="rules" class="clean-list"></ul>
+          </article>
+
+          <article class="card span-6">
+            <div class="card-title">
+              <div>
+                <h3>Patient list improvements made</h3>
+                <p>Direct response to the feedback that the patient table could be improved and should not rely only on colours.</p>
+              </div>
+            </div>
+            <ul class="clean-list">
+              <li>Added numerical priority score beside the colour labels.</li>
+              <li>Added sorting by priority, waiting time, acuity, stage, and patient ID.</li>
+              <li>Added alert text in the table so meaning is not hidden in colours only.</li>
+              <li>Added high priority only view in the filter bar.</li>
             </ul>
-          </div>
+          </article>
         </div>
       </section>
 
-      <section id="tab-staffing" class="tab-panel">
-        <div class="layout-grid">
-          <div class="card span-5">
-            <div class="card-head">
-              <h3>Roster vs actual staffing</h3>
-              <p>Coverage by role with visible gaps and agency support</p>
+      <section id="panel-analysis" class="panel">
+        <div class="grid">
+          <article class="card span-7">
+            <div class="card-title">
+              <div>
+                <h3>Detailed clinical operations chart</h3>
+                <p>Richer chart analysis added because testers said some charts were still basic.</p>
+              </div>
+              <select id="analysisMode" class="mini-select">
+                <option value="pressure">Pressure indicators</option>
+                <option value="flow">Flow balance</option>
+                <option value="handover">Handover focus</option>
+              </select>
             </div>
-            <div id="staffingCards" class="stack-list"></div>
-          </div>
+            <div id="analysisChart" class="svg-chart large"></div>
+            <div id="analysisLegend" class="legend"></div>
+          </article>
 
-          <div class="card span-3">
-            <div class="card-head">
-              <h3>Skill mix and coverage trend</h3>
-              <p>Required staffing vs present staffing</p>
+          <article class="card span-5">
+            <div class="card-title">
+              <div>
+                <h3>Chart insights</h3>
+                <p>Short written interpretation to support better real clinical usefulness.</p>
+              </div>
             </div>
-            <canvas id="staffingChart" height="200"></canvas>
-          </div>
+            <div id="chartInsights" class="stack"></div>
+          </article>
 
-          <div class="card span-4">
-            <div class="card-head">
-              <h3>Break coverage planner</h3>
-              <p>Mini planner showing break windows and local coverage risk</p>
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Breach reason analysis</h3>
+                <p>Demo split of why 4 hour risk is appearing.</p>
+              </div>
             </div>
-            <div class="table-wrap small-table">
-              <table id="breakTable">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Role</th>
-                    <th>Zone</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
+            <div id="breachBars" class="bar-list compact"></div>
+          </article>
 
-          <div class="card span-5">
-            <div class="card-head">
-              <h3>Bed and cubicle state</h3>
-              <p>Real time style occupancy board for treatment spaces</p>
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Filter impact panel</h3>
+                <p>Shows how the selected filters change the data view.</p>
+              </div>
+            </div>
+            <div id="filterImpact" class="summary-grid"></div>
+          </article>
+
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Suggested next data points</h3>
+                <p>Added to strengthen clinical realism.</p>
+              </div>
+            </div>
+            <ul class="clean-list">
+              <li>Imaging turnaround time by modality</li>
+              <li>Lab turnaround time by test type</li>
+              <li>Ambulance handover delay by arrival hour</li>
+              <li>Bed request to bed allocated time</li>
+              <li>Staffing gap by hour and zone</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="panel-staffing" class="panel">
+        <div class="grid">
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Roster coverage</h3>
+                <p>Staffing was identified as a useful section, so it has been strengthened.</p>
+              </div>
+            </div>
+            <div id="staffingCards" class="stack"></div>
+          </article>
+
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Coverage heatmap by hour</h3>
+                <p>New view showing how staffing pressure changes through the shift.</p>
+              </div>
+            </div>
+            <div id="coverageHeatmap" class="heatmap"></div>
+          </article>
+
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Bed and cubicle state</h3>
+                <p>Area status with blocked and cleaning spaces highlighted.</p>
+              </div>
             </div>
             <div class="table-wrap">
-              <table id="bedStateTable">
+              <table id="bedTable">
                 <thead>
                   <tr>
                     <th>Area</th>
@@ -272,89 +353,114 @@
                 <tbody></tbody>
               </table>
             </div>
-          </div>
+          </article>
 
-          <div class="card span-3">
-            <div class="card-head">
-              <h3>Turnaround times</h3>
-              <p>Bed ready time minus bed vacated time</p>
+          <article class="card span-5">
+            <div class="card-title">
+              <div>
+                <h3>Bed turnaround</h3>
+                <p>Shows which spaces are ready and which are delayed.</p>
+              </div>
             </div>
-            <canvas id="turnaroundChart" height="220"></canvas>
-          </div>
+            <div id="bedTurnaround" class="bar-list"></div>
+          </article>
 
-          <div class="card span-4">
-            <div class="card-head">
-              <h3>Operational risk register</h3>
-              <p>Compact issue register for the current shift</p>
+          <article class="card span-3">
+            <div class="card-title">
+              <div>
+                <h3>Break coverage planner</h3>
+                <p>Visible planning support.</p>
+              </div>
             </div>
-            <div id="riskRegister" class="stack-list"></div>
-          </div>
+            <div class="table-wrap">
+              <table id="breakTable">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Role</th>
+                    <th>Zone</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
 
-          <div class="card span-12">
-            <div class="card-head">
-              <h3>Staffing and beds notes</h3>
-              <p>This page helps the team distinguish between flow pressure, staffing shortages, and bed capacity constraints.</p>
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Operational risk register</h3>
+                <p>Shift risks that need management attention.</p>
+              </div>
             </div>
-            <ul class="notes-list">
-              <li>Tables are intentionally concrete because they are trusted quickly in academic demonstration settings.</li>
-              <li>Average bed turnaround time is calculated as Σ bed turnaround times ÷ number of completed bed turnaround events.</li>
-              <li>The visual balance mirrors the staffing and beds wireframe but is upgraded into a cleaner presentable prototype.</li>
-            </ul>
-          </div>
+            <div id="riskRegister" class="stack"></div>
+          </article>
         </div>
       </section>
 
-      <section id="tab-incidents" class="tab-panel">
-        <div class="layout-grid">
-          <div class="card span-4">
-            <div class="card-head">
-              <h3>Current incident summary</h3>
-              <p>Used during surge, ambulance stacking, or major internal delay situations</p>
+      <section id="panel-incident" class="panel">
+        <div class="grid">
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Current incident summary</h3>
+                <p>Headline facts for the current operational situation.</p>
+              </div>
             </div>
             <div id="incidentSummary" class="summary-grid"></div>
-          </div>
+          </article>
 
-          <div class="card span-3">
-            <div class="card-head">
-              <h3>Action tracker</h3>
-              <p>Short task board for command decisions</p>
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Action tracker</h3>
+                <p>Status values are now editable within the prototype.</p>
+              </div>
             </div>
-            <div class="table-wrap small-table">
+            <div class="table-wrap">
               <table id="actionTable">
                 <thead>
                   <tr>
                     <th>Action</th>
                     <th>Owner</th>
                     <th>Due</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
               </table>
             </div>
-          </div>
+          </article>
 
-          <div class="card span-5">
-            <div class="card-head">
-              <h3>Pressure monitor</h3>
-              <p>Trend of arrivals, breaches, handover delays, and occupancy in the last 6 hours</p>
+          <article class="card span-4">
+            <div class="card-title">
+              <div>
+                <h3>Pressure monitor</h3>
+                <p>Multi signal view for surge management.</p>
+              </div>
             </div>
-            <canvas id="pressureChart" height="220"></canvas>
-          </div>
+            <div id="incidentPressureChart" class="svg-chart"></div>
+            <div id="incidentLegend" class="legend"></div>
+          </article>
 
-          <div class="card span-7">
-            <div class="card-head">
-              <h3>Escalation checklist</h3>
-              <p>Structured guide to reduce chaos when the department is under stress</p>
+          <article class="card span-7">
+            <div class="card-title">
+              <div>
+                <h3>Escalation checklist</h3>
+                <p>Checklist boxes now work, avoiding the fake interactivity issue.</p>
+              </div>
             </div>
-            <div id="checklist" class="check-list"></div>
-          </div>
+            <div id="checklist" class="checklist"></div>
+          </article>
 
-          <div class="card span-5">
-            <div class="card-head">
-              <h3>Communications panel</h3>
-              <p>Draft structure for internal updates and handover notes</p>
+          <article class="card span-5">
+            <div class="card-title">
+              <div>
+                <h3>Communications panel</h3>
+                <p>Structured updates for site teams and departments.</p>
+              </div>
             </div>
-            <div class="table-wrap small-table">
+            <div class="table-wrap">
               <table id="commTable">
                 <thead>
                   <tr>
@@ -366,25 +472,57 @@
                 <tbody></tbody>
               </table>
             </div>
-          </div>
+          </article>
+        </div>
+      </section>
 
-          <div class="card span-12">
-            <div class="card-head">
-              <h3>Incident command notes</h3>
-              <p>This screen is for stressed periods where the department needs one place to hold facts, actions, owners, and communications.</p>
+      <section id="panel-feedback" class="panel">
+        <div class="grid">
+          <article class="card span-6">
+            <div class="card-title">
+              <div>
+                <h3>Feedback themes used for this revision</h3>
+                <p>This page can be screenshotted as evidence that tester feedback was translated into design action.</p>
+              </div>
             </div>
-            <ul class="notes-list">
-              <li>The page is intentionally high contrast and clean so it still looks readable in screenshots and presentation settings.</li>
-              <li>It reflects the structure of the incident wireframe but with working tables and a live style pressure chart.</li>
-              <li>The checklist, action tracker, and communications panel together make the dashboard look substantially more complete.</li>
+            <div id="feedbackThemes" class="stack"></div>
+          </article>
+
+          <article class="card span-6">
+            <div class="card-title">
+              <div>
+                <h3>Change log from Cycle 2 to this revision</h3>
+                <p>Clear design traceability for the portfolio.</p>
+              </div>
+            </div>
+            <div id="changeLog" class="stack"></div>
+          </article>
+
+          <article class="card span-12">
+            <div class="card-title">
+              <div>
+                <h3>Recommended next testing focus</h3>
+                <p>Use this after sending the revised version to testers.</p>
+              </div>
+            </div>
+            <ul class="clean-list two-col">
+              <li>Can users sort the patient list correctly without guidance?</li>
+              <li>Does the priority score make patient risk easier to understand?</li>
+              <li>Are the chart insights detailed enough without feeling cluttered?</li>
+              <li>Do the filter chips and filter impact panel make filtering clearer?</li>
+              <li>Does the staffing heatmap add useful operational meaning?</li>
+              <li>Do the action tracker and checklist now feel properly interactive?</li>
             </ul>
-          </div>
+          </article>
         </div>
       </section>
     </main>
+
+    <footer>
+      <p>Educational prototype only. Demo patient data is fictional and must not be used for real clinical decision making.</p>
+    </footer>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

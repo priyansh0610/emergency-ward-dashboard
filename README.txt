@@ -1,41 +1,40 @@
-Emergency Ward Dashboard Presentable Full Package
+Emergency Ward Dashboard - Feedback Revised Version
 
-Files included
-1. index.html
-2. styles.css
-3. app.js
-4. README.txt
+How to open
+1. Extract this zip file.
+2. Open index.html in Chrome, Edge, or Firefox.
+3. No installation is required.
 
-How to use
-1. Extract the zip folder
-2. Open index.html in Chrome, Edge, or Firefox
-3. No installation is required
-4. Use the left navigation to move between all 4 detailed screens:
-   - Overview
-   - Patient Flow
-   - Staffing and Beds
-   - Incident Command
+Why this version was revised
+This version responds to Cycle 2 feedback. The strongest feedback themes were:
+1. the revised design was clearer and calmer than the first version
+2. the patient list table still needed improvement
+3. relying only on colour was not enough for sorting patients
+4. charts were useful but still slightly basic
+5. filters were clearer but could be more interactive
+6. the glossary and metric explanations were helpful
 
-What is included
-- Detailed version of all 4 wireframe screens
-- Presentable visual styling
-- Demo data for patients, staffing, beds, actions, communications, and incidents
-- Filters for zone, acuity, arrival mode, date, shift, and search
-- Charts using Chart.js
-- CSV export for patient flow data
-- Automatically calculated waiting and turnaround time metrics
+Main changes made
+1. Added sortable patient list table.
+2. Added numerical priority score.
+3. Added high priority only filter.
+4. Added chart analysis page with richer operational insights.
+5. Added breach reason analysis.
+6. Added filter impact panel.
+7. Added staffing coverage heatmap.
+8. Made incident checklist items functional.
+9. Added feedback applied page for portfolio evidence.
+10. Kept the calm, lighter layout because testers liked it.
 
 Main formulas used
 1. Patient turnaround time = departureAt − arrivalAt
 2. Door to triage = triageAt − arrivalAt
 3. Door to clinician = clinicianAt − arrivalAt
 4. Bed turnaround time = readyAt − vacatedAt
-5. Average turnaround time = Σ individual turnaround times ÷ number of completed events
+5. Priority score = acuity score + waiting time score + alert score + boarding score
 
-How to customize
-- Open app.js
-- Replace the demoData object with your own data
-- Keep date and time values in ISO format such as 2026-03-18T08:22:00
+Important note
+This dashboard is an educational prototype only. All patient data is fictional demo data and must not be used for real patient care.
 
-Presentation tip
-For screenshots or portfolio submission, use the browser at full screen width so the dashboard resembles a complete ward operations console.
+Additional QA improvement
+- Action tracker status changes and incident checklist ticks now persist in the same browser through local storage where the browser allows it.
